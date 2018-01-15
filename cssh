@@ -1,0 +1,3 @@
+#!/bin/bash -eu
+
+ osascript ./scpt/hello.scpt $@
