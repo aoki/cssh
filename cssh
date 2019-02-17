@@ -1,3 +1,32 @@
-#!/bin/bash -eu
+#!/usr/bin/osascript -l JavaScript
 
- osascript ./scpt/iterm2.scpt $@
+const iTerm = Application("iTerm2");
+iTerm.includeStandardAdditions = true;
+const win = iTerm.createWindowWithDefaultProfile();
+
+ObjC.import('stdlib')
+function run(args) {
+  const hosts = args;
+  console.log(hosts);
+
+  const x = hosts.map((h, i, arr) => {
+    return {window: win, tab: 0, session: i}
+  });
+
+  const tabIndex = 0;
+
+  // if ( hosts.length > 5 ) {
+  //   win.tabs[tabIndex].sessions[0].splitVerticallyWithSameProfile();
+  // }
+
+  hosts.forEach( (host, i, arr) => {
+    sendTabCommand(tabIndex, i, `ssh ${host}`);
+    if (i !== arr.length-1) {
+      win.tabs[tabIndex].sessions[i].splitHorizontallyWithSameProfile();
+    }
+  })
+}
+
+function sendTabCommand(tabIndex, sessionIndex, message){
+    win.tabs[tabIndex].sessions[sessionIndex].write({ text: message });
+}
